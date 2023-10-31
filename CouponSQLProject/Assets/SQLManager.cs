@@ -36,7 +36,7 @@ public class SQLManager : MonoBehaviour
         IDbCommand dbCommandInsertValue = dbConnection.CreateCommand();
         dbCommandInsertValue.CommandText = "INSERT OR REPLACE INTO HitCountTableSimple (id, hits) VALUES (0, " + hitCount + ")";
         dbCommandInsertValue.ExecuteNonQuery();
-
+        Debug.Log(hitCount);
         // Remember to always close the connection at the end.
         dbConnection.Close();
     }
