@@ -2,9 +2,9 @@
 
 You can find the C# scripts I wrote in CouponSQLProject/Assets/Scripts
 
-In Scripts/SceneManagerScripts, there are two scripts which work as follows:
-TableScreenManager.cs Populates all store names (converted from hex) from the Stores table into the scroll view on the View Stores Page
-TitleScreenManager.cs Functions for buttons on the Title Screen (first screen the user sees when they open the app)
+In Scripts/SceneManagerScripts, there are two scripts which work as follows:\n
+TableScreenManager.cs Populates all store names (converted from hex) from the Stores table into the scroll view on the View Stores Page\n
+TitleScreenManager.cs Functions for buttons on the Title Screen (first screen the user sees when they open the app)\n
 
 In Scripts/SQLScripts, there are four scripts which work as follows:
 SQLManager.cs Helper functions I created to open the database, create a table (will add more tables in future), and execute a SQL command
