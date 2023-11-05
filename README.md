@@ -1,5 +1,7 @@
 # CouponSQLProject
-
+You can find the finished build here: https://myersrya.itch.io/grocery-price-comparer  
+Make sure to give permission to access files so it can create GroceryPriceComparer.sqlite  
+  
 You can find the C# scripts I wrote in CouponSQLProject/Assets/Scripts  
   
 In Scripts/SceneManagerScripts, there are two scripts which work as follows:  
