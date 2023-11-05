@@ -3076,8 +3076,8 @@ MonoBehaviour:
   tableScreen: {fileID: 1875006606}
   sqlManager: {fileID: 2022733555}
   tableSceneManager: {fileID: 980819880}
-  storeName: {fileID: 168013018}
-  distance: {fileID: 339776867}
+  storeName: {fileID: 113496049}
+  distance: {fileID: 1680566907}
   errorText: {fileID: 1707047564}
 --- !u!1 &1390652147
 GameObject:

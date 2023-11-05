@@ -11,8 +11,8 @@ public class CreateStoreManager : MonoBehaviour
     public GameObject tableScreen;
     public SQLManager sqlManager;
     public TableSceneManager tableSceneManager;
-    public Text storeName;
-    public Text distance;
+    public InputField storeName;
+    public InputField distance;
     public Text errorText;
 
     public void XButton()
