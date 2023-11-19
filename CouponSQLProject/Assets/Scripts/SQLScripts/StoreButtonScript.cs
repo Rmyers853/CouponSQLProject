@@ -12,6 +12,7 @@ public class StoreButtonScript : MonoBehaviour
     public void DeleteButton()
     {
         sqlManager.ExecuteSQLCommand("DELETE FROM StoresTable WHERE addressId = " + addressId);
+        sqlManager.ExecuteSQLCommand("DELETE FROM Addresses WHERE addressId = " + addressId);
         SceneManager.LoadScene("TableScene");
     }
 

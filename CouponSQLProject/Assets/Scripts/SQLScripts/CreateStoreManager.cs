@@ -14,6 +14,15 @@ public class CreateStoreManager : MonoBehaviour
     public InputField storeName;
     public InputField distance;
     public Text errorText;
+    public GameObject addressPopup;
+    public GameObject createStorePopup;
+
+    public int streetNum;
+    public string streetName;
+    public string city;
+    public string state;
+    public string country;
+    public int zipcode;
 
     public void XButton()
     {
@@ -24,8 +33,26 @@ public class CreateStoreManager : MonoBehaviour
         tableScreen.SetActive(true);
     }
 
+    public void AddressButton()
+    {
+        addressPopup.SetActive(true);
+        errorText.text = "";
+        addressPopup.GetComponent<AddressManager>().isCreateStore = true;
+        addressPopup.GetComponent<AddressManager>().initializeValues();
+        if (storeName.text != "")
+        {
+            addressPopup.GetComponent<AddressManager>().storeName = storeName.text;
+        }
+        if (distance.text != "")
+        {
+            addressPopup.GetComponent<AddressManager>().distance = float.Parse(distance.text, CultureInfo.InvariantCulture.NumberFormat);
+        }
+        createStorePopup.SetActive(false);
+    }
+
     public void CreateStoreButton()
     {
+        addressPopup.GetComponent<AddressManager>().isCreateStore = true;
         if (storeName.text == "")
         {
             errorText.text = "Store name must not be blank!";
@@ -33,10 +60,18 @@ public class CreateStoreManager : MonoBehaviour
         {
             errorText.text = "Distance must not be blank!";
         }
+        else if (addressPopup.GetComponent<AddressManager>().checkIfInitialized() == false)
+        {
+            errorText.text = "Address must not be blank!";
+        }
         else
         {
             string hexStoreName = stringToHex(storeName.text);
             float trueDistance = float.Parse(distance.text, CultureInfo.InvariantCulture.NumberFormat);
+            string hexStreetName = stringToHex(streetName);
+            string hexCity = stringToHex(city);
+            string hexState = stringToHex(state);
+            string hexCountry = stringToHex(country);
             List<int> addressIds = tableSceneManager.addressIds;
             addressIds.Sort();
             int newAddressId = 0;
@@ -54,6 +89,9 @@ public class CreateStoreManager : MonoBehaviour
                 }
             }
             sqlManager.ExecuteSQLCommand("INSERT INTO StoresTable (addressid, storename, distance) VALUES ( " + newAddressId + ", " + "\'" + hexStoreName + "\', " + trueDistance + ")");
+            sqlManager.ExecuteSQLCommand("INSERT INTO Addresses (addressid, streetnum, streetname, city, state, country, zipcode) VALUES ( "
+                                          + newAddressId + ", " + streetNum + ", " + "\'" + hexStreetName + "\', " + "\'" + hexCity + "\', "
+                                          + "\'" + hexState + "\', " + "\'" + hexCountry + "\', " + zipcode + ")");
             SceneManager.LoadScene("TableScene");
         }
     }

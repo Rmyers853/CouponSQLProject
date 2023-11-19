@@ -13,6 +13,7 @@ public class TableSceneManager : MonoBehaviour
     public SQLManager sqlManager;
     public GameObject tableScreen;
     public GameObject editStorePopup;
+    public GameObject addressPopup;
 
     private List<String> storeNames;
     public List<int> addressIds;
@@ -20,12 +21,14 @@ public class TableSceneManager : MonoBehaviour
     private void Start()
     {
         tableScreen.SetActive(true);
+        addressPopup.SetActive(false);
         createStorePopup.SetActive(false);
 
         storeNames = new List<String>();
         addressIds = new List<int>();
 
         sqlManager.CreateAndOpenTable("StoresTable");
+        sqlManager.CreateAndOpenTable("Addresses");
 
         IDbConnection dbConnection = sqlManager.CreateAndOpenDatabase();
         IDbCommand dbCommandReadValues = dbConnection.CreateCommand();

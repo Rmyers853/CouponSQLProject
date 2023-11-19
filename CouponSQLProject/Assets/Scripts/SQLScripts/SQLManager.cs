@@ -19,6 +19,10 @@ public class SQLManager : MonoBehaviour
         {
             tableString = "StoresTable(addressid INTEGER PRIMARY KEY, storename TEXT, distance REAL)";
         }
+        else if (tableName == "Addresses")
+        {
+            tableString = "Addresses(addressid INTEGER PRIMARY KEY, streetnum INTEGER, streetname TEXT, city TEXT, state TEXT, country TEXT, zipcode INTEGER)";
+        }
         IDbCommand dbCommandCreateTable = CreateAndOpenDatabase().CreateCommand();
         dbCommandCreateTable.CommandText = "CREATE TABLE IF NOT EXISTS " + tableString;
         dbCommandCreateTable.ExecuteReader();

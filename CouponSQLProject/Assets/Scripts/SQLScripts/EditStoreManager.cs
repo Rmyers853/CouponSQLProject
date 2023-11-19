@@ -15,6 +15,15 @@ public class EditStoreManager : MonoBehaviour
     public InputField distance;
     public Text errorText;
     public int currentAddressId;
+    public GameObject addressPopup;
+    public GameObject editPopup;
+
+    public int streetNum;
+    public string streetName;
+    public string city;
+    public string state;
+    public string country;
+    public int zipcode;
 
     public void loadStoreInfo()
     {
@@ -30,6 +39,15 @@ public class EditStoreManager : MonoBehaviour
         dbConnection.Close();
     }
 
+    public void AddressButton()
+    {
+        addressPopup.SetActive(true);
+        addressPopup.GetComponent<AddressManager>().isCreateStore = false;
+        addressPopup.GetComponent<AddressManager>().currentAddressId = currentAddressId;
+        addressPopup.GetComponent<AddressManager>().initializeValues();
+        editPopup.SetActive(false);
+    }
+
     public void SaveButton()
     {
 
@@ -41,11 +59,22 @@ public class EditStoreManager : MonoBehaviour
         {
             errorText.text = "Distance must not be blank!";
         }
+        else if (addressPopup.GetComponent<AddressManager>().checkIfInitialized() == false)
+        {
+            errorText.text = "Address must not be blank!";
+        }
         else
         {
             string hexStoreName = stringToHex(storeName.text);
             float trueDistance = float.Parse(distance.text, CultureInfo.InvariantCulture.NumberFormat);
+            string hexStreetName = stringToHex(streetName);
+            string hexCity = stringToHex(city);
+            string hexState = stringToHex(state);
+            string hexCountry = stringToHex(country);
             sqlManager.ExecuteSQLCommand("REPLACE INTO StoresTable (addressid, storename, distance) VALUES ( " + currentAddressId + ", " + "\'" + hexStoreName + "\', " + trueDistance + ")");
+            sqlManager.ExecuteSQLCommand("REPLACE INTO Addresses (addressid, streetnum, streetname, city, state, country, zipcode) VALUES( "
+                                          + currentAddressId + ", " + streetNum + ", " + "\'" + hexStreetName + "\', " + "\'" + hexCity + "\', "
+                                          + "\'" + hexState + "\', " + "\'" + hexCountry + "\', " + zipcode + ")");
             gameObject.SetActive(false);
             SceneManager.LoadScene("TableScene");
         }
