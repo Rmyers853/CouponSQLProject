@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Text;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class TableSceneManager : MonoBehaviour
 {
     public Transform contentContainer;
     public GameObject storePrefab;
     public GameObject createStorePopup;
-    public SQLManager sqlManager;
+    private SQLManager sqlManager;
     public GameObject tableScreen;
     public GameObject editStorePopup;
     public GameObject addressPopup;
@@ -18,8 +20,14 @@ public class TableSceneManager : MonoBehaviour
     private List<String> storeNames;
     public List<int> addressIds;
 
+    /*private void Awake()
+    {
+        SceneManager.LoadScene("SQLManagerScene", LoadSceneMode.Additive);
+    }*/
+
     private void Start()
     {
+        sqlManager = GameObject.FindGameObjectWithTag("SQLManager").GetComponent<SQLManager>();
         tableScreen.SetActive(true);
         addressPopup.SetActive(false);
         createStorePopup.SetActive(false);
@@ -27,21 +35,10 @@ public class TableSceneManager : MonoBehaviour
         storeNames = new List<String>();
         addressIds = new List<int>();
 
-        sqlManager.CreateAndOpenTable("StoresTable");
-        sqlManager.CreateAndOpenTable("Addresses");
+        sqlManager.ReadSQLValuesIntegers("SELECT addressid FROM StoresTable;", addressIds, 0);
 
-        IDbConnection dbConnection = sqlManager.CreateAndOpenDatabase();
-        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-        dbCommandReadValues.CommandText = "SELECT * FROM StoresTable";
-        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
+        sqlManager.ReadSQLValuesStrings("SELECT storename FROM StoresTable;", storeNames, 0);
 
-        while (dataReader.Read())
-        {
-            addressIds.Add(dataReader.GetInt32(0));
-            storeNames.Add(dataReader.GetString(1));
-        }
-
-        dbConnection.Close();
         PopulateStoreScrollView();
     }
 
@@ -51,7 +48,8 @@ public class TableSceneManager : MonoBehaviour
         {
             var storeItem = Instantiate(storePrefab);
 
-            storeItem.GetComponentInChildren<Text>().text = hexToString(storeNames[i]);
+            //storeItem.GetComponentInChildren<Text>().text = sqlManager.hexToString(storeNames[i]);
+            storeItem.GetComponent<StoreButtonScript>().storeButtonText.text = sqlManager.hexToString(storeNames[i]);
             storeItem.GetComponent<StoreButtonScript>().addressId = addressIds[i];
             storeItem.GetComponent<StoreButtonScript>().sqlManager = sqlManager;
             storeItem.GetComponent<StoreButtonScript>().editStorePopup = editStorePopup;
@@ -68,18 +66,13 @@ public class TableSceneManager : MonoBehaviour
         tableScreen.SetActive(false);
     }
 
+    public void BackButton()
+    {
+        sqlManager.SceneSwitch("TableScene", "HomeScene");
+    }
+
     public void XButton()
     {
         Application.Quit();
-    }
-
-    public String hexToString(string hexString)
-    {
-        byte[] raw = new byte[hexString.Length / 2];
-        for (int i = 0; i < raw.Length; i++)
-        {
-            raw[i] = Convert.ToByte(hexString.Substring(i * 2, 2), 16);
-        }
-        return Encoding.ASCII.GetString(raw);
     }
 }

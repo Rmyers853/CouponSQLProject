@@ -11,4 +11,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TableScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/HomeScene.unity
+    guid: a1bda6a8a2c4444bb9f1a2a6d80ef5f6
+  - enabled: 1
+    path: Assets/Scenes/SQLManagerScene.unity
+    guid: f44e18c3e572f4285b10e42dc1e83267
+  - enabled: 1
+    path: Assets/Scenes/StoreScene.unity
+    guid: f9fcc7f9cf77144ffb6fb0723375ba64
+  - enabled: 1
+    path: Assets/Scenes/GroceryListScene.unity
+    guid: 4763e3399b346459bbf8c20071cf447f
   m_configObjects: {}
