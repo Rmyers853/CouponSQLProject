@@ -24,8 +24,8 @@ public class StoreSceneManager : MonoBehaviour
         storeName.text = sqlManager.storeName;
         itemNames = new List<string>();
         prices = new List<float>();
-        sqlManager.ReadSQLValuesStrings("SELECT itemname FROM ItemPrices WHERE addressid = " + sqlManager.addressId + " ORDER BY itemname;", itemNames, 0);
-        sqlManager.ReadSQLValuesFloats("SELECT itemname, price FROM ItemPrices WHERE addressid = " + sqlManager.addressId + " ORDER BY itemname;", prices, 1);
+        sqlManager.ReadSQLValues("SELECT itemname FROM ItemPrices WHERE addressid = " + sqlManager.addressId + " ORDER BY itemname;", itemNames, 0);
+        sqlManager.ReadSQLValues("SELECT itemname, price FROM ItemPrices WHERE addressid = " + sqlManager.addressId + " ORDER BY itemname;", prices, 1);
         PopulateStoreScrollView();
     }
 

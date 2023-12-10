@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +17,8 @@ public class CompareItemManager : MonoBehaviour
     {
         itemNames = new List<string>();
         prices = new List<float>();
-        sqlManager.ReadSQLValuesStrings("SELECT stores.storename FROM ItemPrices items, StoresTable stores WHERE items.itemname = \'" + itemName + "\' AND stores.addressid = items.addressid ORDER BY price;", itemNames, 0);
-        sqlManager.ReadSQLValuesFloats("SELECT itemname, price FROM ItemPrices WHERE itemname = \'" + itemName + "\' ORDER BY price;", prices, 1);
+        sqlManager.ReadSQLValues("SELECT stores.storename FROM ItemPrices items, StoresTable stores WHERE items.itemname = \'" + itemName + "\' AND stores.addressid = items.addressid ORDER BY price;", itemNames, 0);
+        sqlManager.ReadSQLValues("SELECT itemname, price FROM ItemPrices WHERE itemname = \'" + itemName + "\' ORDER BY price;", prices, 1);
         PopulateStoreScrollView();
     }
 

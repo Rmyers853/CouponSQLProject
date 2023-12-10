@@ -23,9 +23,9 @@ public class EditItemManager : MonoBehaviour
 
     public void loadItemInfo()
     {
-        string[] itemInfo = sqlManager.ReadSQLValuesItemsTable(currentAddressId, currentItemName);
+        float loadedPrice = sqlManager.GetPrice(currentAddressId, currentItemName);
         itemName.text = sqlManager.hexToString(currentItemName);
-        price.text = itemInfo[0];
+        price.text = loadedPrice.ToString();
     }
 
     public void XButton()

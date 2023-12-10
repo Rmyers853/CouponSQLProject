@@ -20,11 +20,6 @@ public class TableSceneManager : MonoBehaviour
     private List<String> storeNames;
     public List<int> addressIds;
 
-    /*private void Awake()
-    {
-        SceneManager.LoadScene("SQLManagerScene", LoadSceneMode.Additive);
-    }*/
-
     private void Start()
     {
         sqlManager = GameObject.FindGameObjectWithTag("SQLManager").GetComponent<SQLManager>();
@@ -35,9 +30,9 @@ public class TableSceneManager : MonoBehaviour
         storeNames = new List<String>();
         addressIds = new List<int>();
 
-        sqlManager.ReadSQLValuesIntegers("SELECT addressid FROM StoresTable;", addressIds, 0);
+        sqlManager.ReadSQLValues("SELECT addressid FROM StoresTable;", addressIds, 0);
 
-        sqlManager.ReadSQLValuesStrings("SELECT storename FROM StoresTable;", storeNames, 0);
+        sqlManager.ReadSQLValues("SELECT storename FROM StoresTable;", storeNames, 0);
 
         PopulateStoreScrollView();
     }
@@ -48,7 +43,6 @@ public class TableSceneManager : MonoBehaviour
         {
             var storeItem = Instantiate(storePrefab);
 
-            //storeItem.GetComponentInChildren<Text>().text = sqlManager.hexToString(storeNames[i]);
             storeItem.GetComponent<StoreButtonScript>().storeButtonText.text = sqlManager.hexToString(storeNames[i]);
             storeItem.GetComponent<StoreButtonScript>().addressId = addressIds[i];
             storeItem.GetComponent<StoreButtonScript>().sqlManager = sqlManager;
@@ -69,10 +63,5 @@ public class TableSceneManager : MonoBehaviour
     public void BackButton()
     {
         sqlManager.SceneSwitch("TableScene", "HomeScene");
-    }
-
-    public void XButton()
-    {
-        Application.Quit();
     }
 }

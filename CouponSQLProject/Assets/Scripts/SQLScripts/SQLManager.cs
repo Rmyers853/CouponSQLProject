@@ -1,3 +1,4 @@
+using Firebase.Database;
 using Mono.Data.Sqlite;
 using System;
 using System.Collections;
@@ -7,33 +8,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class SQLManager : MonoBehaviour
 {
-    public string storeName;
-    public int addressId;
-
-    public void Awake()
-    {
-        if (!IsLoaded("SQLManagerScene"))
-        {
-            SceneManager.LoadScene("SQLManagerScene", LoadSceneMode.Additive);
-        }
-    }
-
-    private static bool IsLoaded(string name)
-    {
-        for (int i = 0; i < SceneManager.sceneCount; i++)
-        {
-            if (SceneManager.GetSceneAt(i).name == name)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public IDbConnection CreateAndOpenDatabase()
     {
         string dbUri = "URI=file:GroceryPriceComparer.sqlite;";
@@ -68,49 +45,34 @@ public class SQLManager : MonoBehaviour
         dbConnection.Close();
     }
 
-    public void ReadSQLValuesStrings(string command, List<String> items, int index)
+    public List<object> ReadSQLValues(string command, int index)
     {
         IDbConnection dbConnection = CreateAndOpenDatabase();
         IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
         dbCommandReadValues.CommandText = command;
         IDataReader dataReader = dbCommandReadValues.ExecuteReader();
-
-        while (dataReader.Read())
-        {
-            items.Add(dataReader.GetString(index));
-        }
-
+        List<object> items = new List<object>();
+        while (dataReader.Read()) { items.Add(dataReader.GetValue(index)); }
         dbConnection.Close();
+        return items;
     }
 
-    public void ReadSQLValuesIntegers(string command, List<int> items, int index)
+    public void ReadSQLValues(string command, List<string> items, int index)
     {
-        IDbConnection dbConnection = CreateAndOpenDatabase();
-        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-        dbCommandReadValues.CommandText = command;
-        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
-
-        while (dataReader.Read())
-        {
-            items.Add(dataReader.GetInt32(index));
-        }
-
-        dbConnection.Close();
+        List<object> objects = ReadSQLValues(command, index);
+        for (int i = 0; i < objects.Count; i++) { items.Add(objects[i].ToString()); }
     }
 
-    public void ReadSQLValuesFloats(string command, List<float> items, int index)
+    public void ReadSQLValues(string command, List<int> items, int index)
     {
-        IDbConnection dbConnection = CreateAndOpenDatabase();
-        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-        dbCommandReadValues.CommandText = command;
-        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
+        List<object> objects = ReadSQLValues(command, index);
+        for (int i = 0; i < objects.Count; i++) { items.Add(Convert.ToInt32(objects[i].ToString())); }
+    }
 
-        while (dataReader.Read())
-        {
-            items.Add(dataReader.GetFloat(index));
-        }
-
-        dbConnection.Close();
+    public void ReadSQLValues(string command, List<float> items, int index)
+    {
+        List<object> objects = ReadSQLValues(command, index);
+        for (int i = 0; i < objects.Count; i++) { items.Add(Convert.ToSingle(objects[i].ToString())); }
     }
 
     public string[] ReadSQLValuesAddress(int currentAddressId)
@@ -149,19 +111,17 @@ public class SQLManager : MonoBehaviour
         return returnString;
     }
 
-    public string[] ReadSQLValuesItemsTable(int currentAddressId, string itemName)
+    public string ExecuteSQLCommand(string command)
     {
-        string[] returnString = new string[2];
         IDbConnection dbConnection = CreateAndOpenDatabase();
-        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
-        dbCommandReadValues.CommandText = "SELECT price FROM ItemPrices WHERE addressId = " + currentAddressId + " AND itemname = \'" + itemName + "\'";
-        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
-        while (dataReader.Read())
-        {
-            returnString[0] = dataReader.GetFloat(0).ToString();
-        }
+        IDbCommand dbCommandInsertValue = dbConnection.CreateCommand();
+        dbCommandInsertValue.CommandText = "PRAGMA foreign_keys=ON";
+        dbCommandInsertValue.ExecuteNonQuery();
+        dbCommandInsertValue.CommandText = command;
+        try { dbCommandInsertValue.ExecuteReader(); }
+        catch (Exception myException) { return myException.Message; }
         dbConnection.Close();
-        return returnString;
+        return null;
     }
 
     public float GetPrice(int addressId, string itemName)
@@ -181,35 +141,16 @@ public class SQLManager : MonoBehaviour
         return returnVal;
     }
 
-    public string ExecuteSQLCommand(string command)
-    {
-        IDbConnection dbConnection = CreateAndOpenDatabase();
-        IDbCommand dbCommandInsertValue = dbConnection.CreateCommand();
-        dbCommandInsertValue.CommandText = "PRAGMA foreign_keys=ON";
-        dbCommandInsertValue.ExecuteNonQuery();
-        dbCommandInsertValue.CommandText = command;
-        try
-        {
-            dbCommandInsertValue.ExecuteReader();
-        }
-        catch (Exception myException)
-        {
-            return myException.Message;
-        }
-        dbConnection.Close();
-        return null;
-    }
-
     public void CompareStores(List<string> storeNames, List<float> prices)
     {
         List<string> itemNames = new List<string>();
         List<int> counts = new List<int>();
         List<int> addressIds = new List<int>();
         List<string> possibleStoreNames = new List<string>();
-        ReadSQLValuesStrings("SELECT itemname FROM GroceryList", itemNames, 0);
-        ReadSQLValuesIntegers("SELECT count FROM GroceryList", counts, 0);
-        ReadSQLValuesIntegers("SELECT addressid FROM StoresTable ORDER BY addressid", addressIds, 0);
-        ReadSQLValuesStrings("SELECT storename FROM StoresTable ORDER BY addressid", possibleStoreNames, 0);
+        ReadSQLValues("SELECT itemname FROM GroceryList", itemNames, 0);
+        ReadSQLValues("SELECT count FROM GroceryList", counts, 0);
+        ReadSQLValues("SELECT addressid FROM StoresTable ORDER BY addressid", addressIds, 0);
+        ReadSQLValues("SELECT storename FROM StoresTable ORDER BY addressid", possibleStoreNames, 0);
         float[] finalPrices = new float[addressIds.Count];
         int[] invalidIndexes = new int[addressIds.Count];
         for (int i = 0; i < itemNames.Count; i++)
@@ -246,6 +187,41 @@ public class SQLManager : MonoBehaviour
         }
     }
 
+    public string storeName;
+    public int addressId;
+    public DatabaseReference DBreference;
+    public float time;
+    public static bool userDeleteData;
+
+    public void Awake()
+    {
+        DBreference = FirebaseDatabase.DefaultInstance.RootReference;
+        time = 0f;
+        userDeleteData = false;
+        if (!IsLoaded("SQLManagerScene"))
+        {
+            CreateAndOpenTable("StoresTable");
+            CreateAndOpenTable("Addresses");
+            CreateAndOpenTable("ItemPrices");
+            CreateAndOpenTable("Items");
+            CreateAndOpenTable("GroceryList");
+            ReadAllData();
+            SceneManager.LoadScene("SQLManagerScene", LoadSceneMode.Additive);
+        }
+    }
+
+    private static bool IsLoaded(string name)
+    {
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            if (SceneManager.GetSceneAt(i).name == name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String hexToString(string hexString)
     {
         byte[] raw = new byte[hexString.Length / 2];
@@ -272,5 +248,122 @@ public class SQLManager : MonoBehaviour
     public void SceneSwitch(string oldSceneName, string newSceneName)
     {
         StartCoroutine(SceneSwitchCoroutine(oldSceneName, newSceneName));
+    }
+
+    public void ConvertAndSendToFirebase(string command, int columns, string tableName)
+    {
+        IDbConnection dbConnection = CreateAndOpenDatabase();
+        IDbCommand dbCommandReadValues = dbConnection.CreateCommand();
+        dbCommandReadValues.CommandText = command;
+        IDataReader dataReader = dbCommandReadValues.ExecuteReader();
+        object[] testArray = new object[columns];
+        int currentRow = 0;
+        while (dataReader.Read())
+        {
+            dataReader.GetValues(testArray);
+            StartCoroutine(sendData(tableName, currentRow, string.Join("|", testArray)));
+            currentRow++;
+        }
+        dbConnection.Close();
+    }
+
+    private IEnumerator sendData(string tableName, int currentRow, string data)
+    {
+        var DBTask = DBreference.Child(tableName+"/"+currentRow).SetValueAsync(data);
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to update with {DBTask.Exception}");
+        }
+    }
+
+    private IEnumerator readData(string tableName)
+    {
+        var DBTask = DBreference.Child(tableName).GetValueAsync();
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to update with {DBTask.Exception}");
+        }
+        DataSnapshot snapshot = DBTask.Result;
+        List<object> testList = (List<object>)snapshot.Value;
+        if (testList != null)
+        {
+            for (int i = 0; i < testList.Count; i++)
+            {
+                string[] currentRow = testList[i].ToString().Split('|');
+                switch (tableName)
+                {
+                    case "StoresTable":
+                        ExecuteSQLCommand("INSERT INTO StoresTable (addressid, storename, distance) VALUES ( " + int.Parse(currentRow[0]) + ", " + "\'" + currentRow[1] + "\', " + float.Parse(currentRow[2]) + ")");
+                        break;
+                    case "Addresses":
+                        ExecuteSQLCommand("INSERT INTO Addresses (addressid, streetnum, streetname, city, state, country, zipcode) VALUES ( "
+                        + int.Parse(currentRow[0]) + ", " + int.Parse(currentRow[1]) + ", " + "\'" + currentRow[2] + "\', " + "\'" + currentRow[3] + "\', "
+                        + "\'" + currentRow[4] + "\', " + "\'" + currentRow[5] + "\', " + int.Parse(currentRow[6]) + ")");
+                        break;
+                    case "ItemPrices":
+                        ExecuteSQLCommand("INSERT INTO ItemPrices (itemname, addressid, price) VALUES ( \'" + currentRow[0] + "\', " + int.Parse(currentRow[1]) + ", " + float.Parse(currentRow[2]) + ")");
+                        break;
+                    case "Items":
+                        ExecuteSQLCommand("INSERT INTO Items (itemname) VALUES ( \'" + currentRow[0] + "\')");
+                        break;
+                    case "GroceryList":
+                        ExecuteSQLCommand("INSERT INTO GroceryList (itemname, count) VALUES ( \'" + currentRow[0] + "\', " + int.Parse(currentRow[1]) + ")");
+                        break;
+                }
+            }
+        }
+    }
+
+    private IEnumerator deleteData()
+    {
+        var DBTask = DBreference.RemoveValueAsync();
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+    }
+
+    public void Update()
+    {
+        if (userDeleteData == false)
+        {
+            time += Time.deltaTime;
+            if (time >= 5f)
+            {
+                time = 0f;
+                WriteAllData();
+            }
+        }
+    }
+
+    public void DeleteAllData()
+    {
+        userDeleteData = true;
+        StartCoroutine(deleteData());
+        ExecuteSQLCommand("DROP TABLE IF EXISTS GroceryList");
+        ExecuteSQLCommand("DROP TABLE IF EXISTS ItemPrices");
+        ExecuteSQLCommand("DROP TABLE IF EXISTS Items");
+        ExecuteSQLCommand("DROP TABLE IF EXISTS StoresTable");
+        ExecuteSQLCommand("DROP TABLE IF EXISTS Addresses");
+    }
+
+    public void ReadAllData()
+    {
+        StartCoroutine(readData("Addresses"));
+        StartCoroutine(readData("StoresTable"));
+        StartCoroutine(readData("Items"));
+        StartCoroutine(readData("ItemPrices"));
+        StartCoroutine(readData("GroceryList"));
+    }
+
+    public void WriteAllData()
+    {
+        StartCoroutine(deleteData());
+        ConvertAndSendToFirebase("SELECT * FROM StoresTable", 3, "StoresTable");
+        ConvertAndSendToFirebase("SELECT * FROM Addresses", 7, "Addresses");
+        ConvertAndSendToFirebase("SELECT * FROM ItemPrices", 3, "ItemPrices");
+        ConvertAndSendToFirebase("SELECT * FROM Items", 1, "Items");
+        ConvertAndSendToFirebase("SELECT * FROM GroceryList", 2, "GroceryList");
     }
 }

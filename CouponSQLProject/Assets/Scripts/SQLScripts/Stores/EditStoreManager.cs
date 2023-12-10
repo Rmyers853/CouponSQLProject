@@ -1,7 +1,5 @@
-using System.Data;
 using System.Globalization;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EditStoreManager : MonoBehaviour
@@ -72,7 +70,6 @@ public class EditStoreManager : MonoBehaviour
                                           + "\'" + hexState + "\', " + "\'" + hexCountry + "\', " + zipcode + ")");
             gameObject.SetActive(false);
             sqlManager.SceneSwitch("TableScene", "TableScene");
-            //SceneManager.LoadScene("TableScene");
         }
     }
 

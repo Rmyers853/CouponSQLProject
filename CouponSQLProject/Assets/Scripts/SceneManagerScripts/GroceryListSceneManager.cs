@@ -21,8 +21,8 @@ public class GroceryListSceneManager : MonoBehaviour
         sqlManager = GameObject.FindGameObjectWithTag("SQLManager").GetComponent<SQLManager>();
         itemNames = new List<string>();
         counts = new List<int>();
-        sqlManager.ReadSQLValuesStrings("SELECT itemname FROM GroceryList ORDER BY itemname;", itemNames, 0);
-        sqlManager.ReadSQLValuesIntegers("SELECT itemname, count FROM GroceryList ORDER BY itemname;", counts, 1);
+        sqlManager.ReadSQLValues("SELECT itemname FROM GroceryList ORDER BY itemname;", itemNames, 0);
+        sqlManager.ReadSQLValues("SELECT itemname, count FROM GroceryList ORDER BY itemname;", counts, 1);
         PopulateStoreScrollView();
     }
 
