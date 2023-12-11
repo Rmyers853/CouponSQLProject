@@ -12,6 +12,12 @@ public class CompareListManager : MonoBehaviour
     public List<string> storeNames;
     public List<float> prices;
 
+    public void Start()
+    {
+        sqlManager = GameObject.FindGameObjectWithTag("SQLManager").GetComponent<SQLManager>();
+        loadItemInfo();
+    }
+
     public void loadItemInfo()
     {
         storeNames = new List<string>();

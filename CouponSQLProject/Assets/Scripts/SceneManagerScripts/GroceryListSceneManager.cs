@@ -60,7 +60,5 @@ public class GroceryListSceneManager : MonoBehaviour
     {
         groceryListScreen.SetActive(false);
         compareListPopup.SetActive(true);
-        compareListPopup.GetComponent<CompareListManager>().sqlManager = sqlManager;
-        compareListPopup.GetComponent<CompareListManager>().loadItemInfo();
     }
 }

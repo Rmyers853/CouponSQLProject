@@ -12,6 +12,7 @@ public class CompareItemManager : MonoBehaviour
     public GameObject groceryScreen;
     public List<string> itemNames;
     public List<float> prices;
+    public List<GameObject> prefabs;
 
     public void loadItemInfo()
     {
@@ -39,11 +40,17 @@ public class CompareItemManager : MonoBehaviour
 
             item.transform.SetParent(contentContainer);
             item.transform.localScale = Vector2.one;
+
+            prefabs.Add(item);
         }
     }
 
     public void XButton()
     {
+        for (int i = 0; i < prefabs.Count; i++)
+        {
+            Destroy(prefabs[i]);
+        }
         itemText.text = "";
         gameObject.SetActive(false);
         groceryScreen.SetActive(true);
