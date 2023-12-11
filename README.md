@@ -1,9 +1,11 @@
 # CouponSQLProject
-Stage 2:
+
+&emsp;Stage 2:
+
 You can find the finished build here: https://myersrya.itch.io/grocery-price-comparer-final  
 Make sure to give permission to access files so it can create GroceryPriceComparer.sqlite 
 
-Stage 1:
+&emsp;Stage 1:
 
 You can find the finished build here: https://myersrya.itch.io/grocery-price-comparer  
 Make sure to give permission to access files so it can create GroceryPriceComparer.sqlite  
