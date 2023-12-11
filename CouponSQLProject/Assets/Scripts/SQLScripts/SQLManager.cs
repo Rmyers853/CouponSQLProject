@@ -205,6 +205,7 @@ public class SQLManager : MonoBehaviour
             CreateAndOpenTable("ItemPrices");
             CreateAndOpenTable("Items");
             CreateAndOpenTable("GroceryList");
+            ExecuteSQLCommand("CREATE UNIQUE INDEX idx_itemprices_addressid_itemname ON ItemPrices(addressid, itemname)");
             ReadAllData();
             SceneManager.LoadScene("SQLManagerScene", LoadSceneMode.Additive);
         }
